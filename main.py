@@ -142,7 +142,8 @@ class Zlapp(Fudan):
         get_info = self.session.get(
             'https://zlapp.fudan.edu.cn/ncov/wap/fudan/get-info')
         last_info = get_info.json()
-
+        # 似乎关闭进校权限后，last_info["d"]就会变成False
+        assert last_info["d"], '关闭进校权限后需要手动打卡'
         print("◉上一次提交日期为:", last_info["d"]["info"]["date"])
 
         position = last_info["d"]["info"]['geo_api_info']
