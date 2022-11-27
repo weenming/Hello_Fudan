@@ -16,7 +16,7 @@ from PIL import ImageEnhance
 from requests import session, post, adapters
 import requests
 import urllib3
-import SSL
+import ssl
 
 adapters.DEFAULT_RETRIES = 5
 
