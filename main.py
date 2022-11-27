@@ -14,6 +14,10 @@ from PIL import Image
 from PIL import ImageEnhance
 
 from requests import session, post, adapters
+import requests
+import urllib3
+import SSL
+
 adapters.DEFAULT_RETRIES = 5
 
 
@@ -29,7 +33,12 @@ class CustomHttpAdapter (requests.adapters.HTTPAdapter):
             num_pools=connections, maxsize=maxsize,
             block=block, ssl_context=self.ssl_context)
         
-
+def get_legacy_session():
+    ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+    ctx.options |= 0x4  # OP_LEGACY_SERVER_CONNECT
+    session = requests.session()
+    session.mount('https://', CustomHttpAdapter(ctx))
+    return session
 
 class Fudan:
     """
@@ -48,10 +57,7 @@ class Fudan:
         :param psw: 密码
         :param url_login: 登录页，默认服务为空
         """
-        self.session = session()
-        ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-        ctx.options |= 0x4
-        self.session.mount('https://', CustomHttpAdapter(ctx))
+        self.session = get_legacy_session()
         self.session.keep_alive = True
         self.session.headers['User-Agent'] = self.UA
         self.url_login = url_login
