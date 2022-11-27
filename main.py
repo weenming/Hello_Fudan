@@ -29,9 +29,7 @@ class CustomHttpAdapter (requests.adapters.HTTPAdapter):
             num_pools=connections, maxsize=maxsize,
             block=block, ssl_context=self.ssl_context)
         
-ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-ctx.options |= 0x4
-session.mount('https://', CustomHttpAdapter(ctx))
+
 
 class Fudan:
     """
@@ -51,6 +49,9 @@ class Fudan:
         :param url_login: 登录页，默认服务为空
         """
         self.session = session()
+        ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+        ctx.options |= 0x4
+        self.session.mount('https://', CustomHttpAdapter(ctx))
         self.session.keep_alive = True
         self.session.headers['User-Agent'] = self.UA
         self.url_login = url_login
